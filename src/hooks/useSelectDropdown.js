@@ -3,7 +3,7 @@ import {deepSearchInArr} from '../helpers/deepSearchInArr';
 import {findIndexInArr} from '../helpers/findIndexInArr';
 import {isExist} from '../helpers/isExist';
 
-export const useSelectDropdown = (data, defaultValueByIndex, defaultValue, disabledInternalSearch) => {
+export const useSelectDropdown = (data, defaultValueByIndex, defaultValue, searchFilter) => {
   const [selectedItem, setSelectedItem] = useState(null); // selected item from dropdown
   const [selectedIndex, setSelectedIndex] = useState(-1); // index of selected item from dropdown
   const [searchTxt, setSearchTxt] = useState('');
@@ -35,10 +35,13 @@ export const useSelectDropdown = (data, defaultValueByIndex, defaultValue, disab
   }, [JSON.stringify(defaultValue)]);
 
   const dataArr = useMemo(() => {
-    if (disabledInternalSearch) {
+    if (!searchTxt) {
       return data;
     }
-    return searchTxt ? deepSearchInArr(searchTxt, data) : data;
+    if (searchFilter) {
+      return searchFilter(searchTxt, data);
+    }
+    return deepSearchInArr(searchTxt, data);
   }, [JSON.stringify(data), searchTxt]);
 
   const selectItem = index => {
